@@ -6,6 +6,7 @@ from typing import Dict
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 import json
+import re
 
 # MegaSecret KEYs
 SECRET_KEY = "mysecretkey"
@@ -97,7 +98,7 @@ async def login(user: UserLogin):
     return {"access_token": token, "token_type": "bearer"}
 
 
-# # WEBSOCKET CONNECTION
+# # WEBSOCKET CONNECTION - JSON VERSION
 # @app.websocket("/ws/")
 # async def websocket_endpoint(websocket: WebSocket, token: str = None):
 #     print("WebSocket request received!")
@@ -121,25 +122,19 @@ async def login(user: UserLogin):
 #         manager.disconnect(username)
 
 
-import re
-
 @app.websocket("/ws/")
 async def websocket_endpoint(websocket: WebSocket, token: str):
-    # Decode the JWT token to extract the username
     username = decode_jwt(token)
     if not username:
         await websocket.close()
         return
 
-    # Connect user to the WebSocket manager
     await manager.connect(websocket, username)
     try:
         while True:
-            # Receive plain text from the WebSocket
             data = await websocket.receive_text()
 
             try:
-                # Match two quoted strings: "receiver" "message"
                 match = re.match(r'^\s*"([^"]+)"\s*"([^"]+)"\s*$', data)
                 if not match:
                     await websocket.send_text('❌ Invalid format. Use: "recipient" "message"')
@@ -147,12 +142,10 @@ async def websocket_endpoint(websocket: WebSocket, token: str):
 
                 receiver, message = match.groups()
 
-                # Send the message to the recipient
                 await manager.send_private_message(receiver, f"{username}: {message}")
 
             except Exception as e:
-                # Catch unexpected errors and notify sender
                 await websocket.send_text(f"❌ Error sending message: {str(e)}")
+
     except WebSocketDisconnect:
-        # Disconnect the user cleanly
         manager.disconnect(username)

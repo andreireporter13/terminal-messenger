@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi import WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.security import OAuth2PasswordBearer
+from fastapi.middleware.cors import CORSMiddleware
+#
 from pydantic import BaseModel
 from typing import Dict
 from jose import JWTError, jwt
@@ -13,6 +15,20 @@ SECRET_KEY = "mysecretkey"
 ALGORITHM = "HS256"
 
 app = FastAPI()
+
+origins = [
+    "http://localhost",
+    "http://localhost:8080",
+    "app://."
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # DB for current session :)))
 fake_users_db: Dict[str, dict] = {}

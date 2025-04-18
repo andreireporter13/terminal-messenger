@@ -5,7 +5,6 @@ Screen {
     color: white;
 }
 
-/* Header */
 #header {
     height: 1;
     background: rgb(50, 90, 160);
@@ -14,7 +13,6 @@ Screen {
     content-align: center middle;
 }
 
-/* User Search */
 #user_search {
     height: 3;
     background: #2a2a3a;
@@ -22,7 +20,6 @@ Screen {
     margin-bottom: 1;
 }
 
-/* User List */
 #user_list {
     height: 4;
     border: round #4e4e6e;
@@ -32,7 +29,6 @@ Screen {
     color: #ddddff;
 }
 
-/* Chatbox */
 #chatbox {
     height: 1fr;
     border: solid #444;
@@ -43,7 +39,6 @@ Screen {
     margin-bottom: 1;
 }
 
-/* Footer */
 #footer {
     height: 3;
     layout: horizontal;
@@ -81,6 +76,7 @@ ModalScreen {
     background: #2e2e3e;
     border: round #666;
     padding: 2;
+    layout: vertical;
 }
 
 Label {
@@ -111,4 +107,12 @@ Button {
 
 Button:hover {
     background: #4a4a6a;
+}
+
+#back_to_login_btn {
+    width: 12;
+    background: rgb(60, 160, 80);
+    border: none;
+    color: white;
+    text-style: bold;
 }

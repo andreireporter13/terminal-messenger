@@ -7,6 +7,7 @@ from textual.screen import Screen
 API_URL = "http://localhost:8000"
 
 class ChatScreen(Screen):
+
     def compose(self) -> None:
         yield Static("💬 Chat - Choose a Friend", id="header")
 
@@ -18,12 +19,13 @@ class ChatScreen(Screen):
             self.hide_users_btn = Button("Hide Users", id="hide_users_btn")
             yield self.hide_users_btn
 
+        # Eticheta pentru utilizatorul selectat
         self.selected_friend_label = Label("No friend selected", id="selected_friend")
         yield self.selected_friend_label
 
-        # Adăugăm câmpul pentru a arăta utilizatorul ales
+        # Eticheta pentru "Message to: None" care va fi actualizată
         self.selected_friend_display = Label("Message to: None", id="selected_friend_display")
-        yield self.selected_friend_display  # Afișăm utilizatorul ales
+        yield self.selected_friend_display
 
         with Vertical(id="messages_container"):
             yield Static("Messages will appear here.", id="messages_placeholder")
@@ -35,23 +37,28 @@ class ChatScreen(Screen):
         self.send_btn.add_class("send_button")
         yield self.send_btn
 
-        # Container pentru utilizatori (dacă nu există deja)
-        self.users_container = Vertical(id="users_container")
-        yield self.users_container  # Asigură-te că există un container pentru utilizatori
+        # Container pentru utilizatori pe orizontală
+        self.users_container = Horizontal(id="users_container")
+        yield self.users_container
+
+        # Variabilă pentru a stoca utilizatorul selectat
+        self.selected_user = None
 
     async def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "send_btn":
+        button_id = event.button.id
+
+        if button_id == "send_btn":
             message = self.msg_input.value.strip()
-            if message:
-                print(f"Sending message: {message}")
-                self.msg_input.value = ""  # Șterge câmpul de input
+            if message and self.selected_user:
+                print(f"Sending message to {self.selected_user}: {message}")
+                self.msg_input.value = ""
+            elif not self.selected_user:
+                print("No user selected. Please select a user first.")
             else:
                 print("Message is empty.")
 
-        elif event.button.id == "show_users_btn":
-            # Verificăm dacă utilizatorii sunt deja afișați
+        elif button_id == "show_users_btn":
             if len(self.users_container.children) == 0:
-                # Afișăm utilizatorii când apesi pe "Show Users"
                 users = await self.get_users_from_api()
                 if users:
                     self.show_users(users)
@@ -60,66 +67,65 @@ class ChatScreen(Screen):
             else:
                 print("Users are already displayed.")
 
-        elif event.button.id == "hide_users_btn":
-            # Ascundem utilizatorii când apesi pe "Hide Users"
+            # Actualizează eticheta "Message to" dacă un user este selectat
+            self.update_message_to_label()
+
+        elif button_id == "hide_users_btn":
             self.hide_users()
+
+        elif button_id and button_id.startswith("user_"):
+            self.select_friend(event)
 
     async def get_users_from_api(self) -> list:
         async with httpx.AsyncClient() as client:
             try:
-                print("Making API request...")
                 res = await client.get(f"{API_URL}/users/")
-                print(f"API response status: {res.status_code}")
-                print(f"API response body: {res.text}")
-
                 if res.status_code == 200:
-                    users = res.json().get("users", [])
-                    print(f"Users fetched: {users}")
-                    return users
+                    return res.json().get("users", [])
                 else:
-                    print(f"Error fetching users: {res.status_code}")
                     return []
-            except httpx.RequestError as e:
-                print(f"Request error: {e}")
+            except httpx.RequestError:
                 return []
 
     def show_users(self, users: list) -> None:
-        # Înainte de a adăuga butoane, curățăm containerul de utilizatori
-        for widget in list(self.users_container.children):  # Iterăm prin copii
-            self.users_container.children.remove(widget)  # Îndepărtăm fiecare widget existent
+        for widget in list(self.users_container.children):
+            self.users_container.children.remove(widget)
 
-        # Verificăm dacă utilizatorii au fost adăugați
         if not users:
-            print("No users to display.")
             return
 
-        # Creăm butoane pentru fiecare utilizator activ
         for user in users:
             user_button = Button(user, id=f"user_{user}")
-            print(f"Creating button for user: {user}")  # Verificăm dacă butonul este creat corect
-            user_button.on_click = self.select_friend
             self.users_container.mount(user_button)
-            print(f"User button {user} added to container.")  # Confirmare că butonul este adăugat
 
     def hide_users(self) -> None:
-        # Ascundem lista de utilizatori prin eliminarea butoanelor
-        for widget in list(self.users_container.children):  # Iterăm prin copii
-            widget.remove()  # Îndepărtăm fiecare widget din container
-        print("Users have been hidden.")  # Confirmare că utilizatorii au fost ascunși
+        for widget in list(self.users_container.children):
+            widget.remove()
 
     def select_friend(self, event: Button.Pressed) -> None:
         selected_user = event.button.id.replace("user_", "")
-        print(f"Selected user: {selected_user}")  # Verificăm că funcția este apelată
+        print(f"Selected user: {selected_user}")
 
-        # Actualizare eticheta "Message to"
-        self.selected_friend_display.update(f"Message to: {selected_user}")
-        print(f"Updated message display: Message to: {selected_user}")  # Verificăm că se face update-ul corect
+        self.selected_user = selected_user
 
-        # Actualizare eticheta "You are now chatting with"
-        self.selected_friend_label.update(f"You are now chatting with {selected_user}")
-        print(f"Updated label: You are now chatting with {selected_user}")  # Verificăm că se face update-ul corect
+        try:
+            self.selected_friend_display.update(f"Message to: {selected_user}")
+            print(f"Updated 'Message to' label: {selected_user}")
+        except Exception as e:
+            print(f"Error while updating 'Message to' label: {e}")
+
+        try:
+            self.selected_friend_label.update(f"You are now chatting with {selected_user}")
+            print(f"Updated 'You are now chatting with' label to: {selected_user}")
+        except Exception as e:
+            print(f"Error while updating 'selected_friend' label: {e}")
 
 
+    def update_message_to_label(self):
+        if self.selected_user:
+            self.selected_friend_display.update(f"Message to: {self.selected_user}")
+        else:
+            self.selected_friend_display.update("Message to: None")
 
 
 class AuthApp(App):

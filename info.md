@@ -28,6 +28,6 @@ websocat "ws://localhost:8000/ws/?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ
 "ion" "Hello, how are you?"
 
 # JSON VERSION
-{"ion": "Hello, Ion, ce faci?"}
+{"to": "maria", "msg": "Hello, Ion, ce faci?"}
 
 uvicorn main:app --reload --host 0.0.0.0 --port 8000

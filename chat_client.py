@@ -7,20 +7,22 @@ from textual.containers import Vertical, Horizontal
 from textual.screen import Screen
 import httpx
 
+
 API_URL = "http://localhost:8000"
 
-# Tokenul global
+# Global Token
 token_global = None
+
 
 class ChatScreen(Screen):
     def __init__(self, username: str):
         super().__init__()
         self.username = username
-        self.ws = None
+        self.ws = None  # Vom seta ws direct la WebSocket când ne conectăm
         self.selected_user = None
 
     def compose(self) -> None:
-        yield Static("💬 Chat - Choose a Friend", id="header")
+        yield Static(f"💬 Chat - {self.username}", id="header")
 
         with Horizontal():
             self.show_users_btn = Button("Show Users", id="show_users_btn")
@@ -51,12 +53,10 @@ class ChatScreen(Screen):
 
     async def on_mount(self) -> None:
         try:
-            # Se folosește tokenul global pentru conectarea la WebSocket
             self.ws = await websockets.connect(f"ws://localhost:8000/ws/?token={token_global}")
             asyncio.create_task(self.listen_to_websocket())
-            print("✅ Connected to WebSocket")
         except Exception as e:
-            print(f"❌ Failed to connect to WebSocket: {e}")
+            pass
 
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         button_id = event.button.id
@@ -65,27 +65,15 @@ class ChatScreen(Screen):
             message = self.msg_input.value.strip()
             if message and self.selected_user:
                 payload = {"to": self.selected_user, "msg": message}
-                try:
-                    await self.ws.send(json.dumps(payload))
-                    print(f"📤 Sent to {self.selected_user}: {message}")
-                    self.msg_input.value = ""
-                except Exception as e:
-                    print(f"❌ Failed to send: {e}")
-            elif not self.selected_user:
-                print("No user selected.")
-            else:
-                print("Message is empty.")
+                await self.ws.send(json.dumps(payload))  # Trimiterea mesajului prin WebSocket
+                self.display_message("You", self.selected_user, message, "sent")
+                self.msg_input.value = ""
 
         elif button_id == "show_users_btn":
             if len(self.users_container.children) == 0:
                 users = await self.get_users_from_api()
                 if users:
                     self.show_users(users)
-                else:
-                    print("No users found.")
-            else:
-                print("Users are already displayed.")
-            self.update_message_to_label()
 
         elif button_id == "hide_users_btn":
             self.hide_users()
@@ -99,7 +87,7 @@ class ChatScreen(Screen):
                 res = await client.get(f"{API_URL}/users/")
                 if res.status_code == 200:
                     return res.json().get("users", [])
-            except httpx.RequestError:
+            except httpx.RequestError as e:
                 pass
         return []
 
@@ -120,17 +108,26 @@ class ChatScreen(Screen):
         self.selected_friend_display.update(f"Message to: {selected_user}")
         self.selected_friend_label.update(f"You are now chatting with {selected_user}")
 
-    def update_message_to_label(self):
-        if self.selected_user:
-            self.selected_friend_display.update(f"Message to: {self.selected_user}")
+    def display_message(self, sender: str, receiver: str, message: str, message_type: str):
+        """Afișează mesajele trimise sau primite"""
+        if message_type == "sent":
+            new_message = f"You: {message}"
         else:
-            self.selected_friend_display.update("Message to: None")
+            new_message = f"{receiver}: {message}"
+
+        current_messages = self.messages_placeholder.renderable
+        if current_messages == "Messages will appear here.":
+            self.messages_placeholder.update(new_message)
+        else:
+            self.messages_placeholder.update(f"{current_messages}\n{new_message}")
 
     async def listen_to_websocket(self):
         try:
             while True:
                 msg = await self.ws.recv()
-                self.messages_placeholder.update(f"📥 {msg}")
+                message_data = json.loads(msg)
+                if message_data["to"] == self.username:
+                    self.display_message(message_data["to"], message_data["from"], message_data["msg"], "received")
         except Exception as e:
             pass
 

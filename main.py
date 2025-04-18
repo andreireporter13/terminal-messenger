@@ -119,25 +119,28 @@ async def list_users():
     return {"users": list(fake_users_db.keys())}
 
 
-# WEBSOCKET CONNECTION - JSON VERSION
 @app.websocket("/ws/")
 async def websocket_endpoint(websocket: WebSocket, token: str = None):
-    print("WebSocket request received!")
     if not token:
         raise HTTPException(status_code=400, detail="Token is missing")
+
     username = decode_jwt(token)
     if not username:
         await websocket.close()
         return
 
     await manager.connect(websocket, username)
-    print(f"User {username} connected.")
     try:
         while True:
             data = await websocket.receive_text()
             message_data = json.loads(data)
             receiver = message_data["to"]
             message = message_data["msg"]
-            await manager.send_private_message(receiver, f"{username}: {message}")
+
+            await manager.send_private_message(receiver, json.dumps({
+                "from": username,
+                "to": receiver,
+                "msg": message
+            }))
     except WebSocketDisconnect:
         manager.disconnect(username)

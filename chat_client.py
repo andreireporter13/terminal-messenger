@@ -18,7 +18,7 @@ class ChatScreen(Screen):
     def __init__(self, username: str):
         super().__init__()
         self.username = username
-        self.ws = None  # Vom seta ws direct la WebSocket când ne conectăm
+        self.ws = None
         self.selected_user = None
 
     def compose(self) -> None:

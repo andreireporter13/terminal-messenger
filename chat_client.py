@@ -8,7 +8,8 @@ from textual.screen import Screen
 import httpx
 
 
-API_URL = "http://localhost:8000"
+API_URL = "http://:8000"
+WS_URL = '//:8000"
 
 # Global Token
 token_global = None
@@ -53,7 +54,7 @@ class ChatScreen(Screen):
 
     async def on_mount(self) -> None:
         try:
-            self.ws = await websockets.connect(f"ws://localhost:8000/ws/?token={token_global}")
+            self.ws = await websockets.connect(f"ws:{WS_URL}/ws/?token={token_global}")
             asyncio.create_task(self.listen_to_websocket())
         except Exception as e:
             pass

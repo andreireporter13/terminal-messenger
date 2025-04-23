@@ -8,8 +8,8 @@ from textual.screen import Screen
 import httpx
 
 
-API_URL = "http://:8000"
-WS_URL = '//:8000"
+API_URL = "http://192.168.100.63:8000"
+WS_URL = "//192.168.100.63/:8000"
 
 # Global Token
 token_global = None

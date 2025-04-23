@@ -31,3 +31,8 @@ websocat "ws://localhost:8000/ws/?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ
 {"to": "maria", "msg": "Hello, Ion, ce faci?"}
 
 uvicorn main:app --reload --host 0.0.0.0 --port 8000
+
+# LocalTunnel
+curl https://loca.lt/mytunnelpassword
+
+lt --port 8000 --subdomain zsecretchat2025

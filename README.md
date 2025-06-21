@@ -19,9 +19,12 @@ docker build -t terminal-messenger .
 docker run -d -p 8000:8000 terminal-messenger
 ```
 
+### 2.1 nginx config:
+---> https://github.com/andreireporter13/terminal-messenger/blob/main/nginx/nginx.conf
+
 ### 3. 🎬 Demo & Walkthrough
 
 Watch terminal-messenger live in action:
 
 [![terminal-messenger Demo](https://img.youtube.com/vi/wqdllVNsiyw/0.jpg)](https://www.youtube.com/watch?v=wqdllVNsiyw)
-*Demo by Andrei Reporter*
+*Demo by return_1101*

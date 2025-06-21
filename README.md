@@ -152,6 +152,7 @@ P.S. For more details about installation and additional setup instructions, plea
 ### 1. 🎬 Demo & Walkthrough
 
 Watch terminal-messenger live in action:
+<br>
 [![terminal-messenger Kubernetes Demo](https://img.youtube.com/vi/BxltdW97iP4/0.jpg)](https://www.youtube.com/watch?v=BxltdW97iP4)
 <br>
 *Kubernetes Deployment Demo by return_1101*

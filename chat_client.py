@@ -8,8 +8,8 @@ from textual.screen import Screen
 import httpx
 
 
-API_URL = ""
-WS_URL = ""
+API_URL = "http://terminalmessenger.local"
+WS_URL = "//terminalmessenger.local"
 
 # Global Token
 token_global = None

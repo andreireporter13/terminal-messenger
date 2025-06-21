@@ -1,2 +1,1 @@
-# description ongoing... 
-app v.1
+# terminal-messenger on Linux Server / Kubernetes (VPS Server / Kubernetes)

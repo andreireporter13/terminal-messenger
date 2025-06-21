@@ -34,6 +34,36 @@ Watch terminal-messenger live in action:
 
 You can deploy `terminal-messenger` to a Kubernetes cluster — including on a Raspberry Pi 5 — using the manifests provided in this repository.
 
+# -----------
+## 🛠️ Running the Client Locally
+The chat_client.py script is designed to run outside of the Docker container. It is a separate terminal-based client application that connects to the backend API and WebSocket server.
+
+You should run it locally on your machine, after installing the required Python packages and setting the correct server address (as described above).
+
+This allows the client to communicate with a backend deployed via Docker, VPS, or Kubernetes.
+
+### 1. Create and activate a virtual environment (recommended):
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 2. Install the required dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+### 3.Update the server address in the client code:
+Open the chat_client.py file and replace the default URLs with the actual IP and port of your server:
+```bash
+API_URL = "http://your-server-ip:8000"
+WS_URL = "ws://your-server-ip:8000"
+```
+
+API_URL = "http://terminalmessenger.local"
+WS_URL = "//terminalmessenger.local"
+# -----------
+
 ### 1. Clone the repository
 
 ```bash

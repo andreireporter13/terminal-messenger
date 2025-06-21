@@ -60,8 +60,8 @@ API_URL = "http://your-server-ip:8000"
 WS_URL = "ws://your-server-ip:8000"
 ```
 
-API_URL = "http://terminalmessenger.local"
-WS_URL = "//terminalmessenger.local"
+Make sure to use ws:// or wss:// for the WS_URL depending on whether you're using HTTPS.
+
 # Using chat application <----------->
 
 ### 1. Clone the repository

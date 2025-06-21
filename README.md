@@ -27,7 +27,7 @@ docker run -d -p 8000:8000 terminal-messenger
 Watch terminal-messenger live in action:
 
 [![terminal-messenger Demo](https://img.youtube.com/vi/wqdllVNsiyw/0.jpg)](https://www.youtube.com/watch?v=wqdllVNsiyw)
-
+<br>
 *Demo by return_1101*
 
 ## ☸️ Kubernetes Deployment (on Raspberry Pi 5)
@@ -153,5 +153,5 @@ P.S. For more details about installation and additional setup instructions, plea
 
 Watch terminal-messenger live in action:
 [![terminal-messenger Kubernetes Demo](https://img.youtube.com/vi/BxltdW97iP4/0.jpg)](https://www.youtube.com/watch?v=BxltdW97iP4)
-
+<br>
 *Kubernetes Deployment Demo by return_1101*

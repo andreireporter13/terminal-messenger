@@ -144,3 +144,12 @@ sudo kubectl apply -n learning-dev -f mess_ingress.yaml
 ```
 
 P.S. The -n learning-dev flag specifies my Kubernetes namespace; please replace it with your own namespace if different.
+
+P.S. For more details about installation and additional setup instructions, please visit:
+-> https://github.com/andreireporter13/terminal-messenger/blob/main/k3s_install_raspberry_pi5
+
+### 1. 🎬 Demo & Walkthrough
+
+Watch terminal-messenger live in action:
+[![terminal-messenger Kubernetes Demo](https://img.youtube.com/vi/BxltdW97iP4/0.jpg)](https://www.youtube.com/watch?v=BxltdW97iP4)
+*Kubernetes Deployment Demo by return_1101*
